@@ -83,11 +83,11 @@ def run_class_incremental(cfg, device):
     )
     # pdb.set_trace()
     model.classes_names = classes_names
-    if cfg.visual_agent:
+    if cfg.visual_clsf:
         if cfg.model_name == "ViT-L/14":
-            vision_agent = VisionClassifier(768, cfg.increment, activation=None)
+            vision_clsf = VisionClassifier(768, cfg.increment, activation=None)
         else:
-            vision_agent = VisionClassifier(512, cfg.increment, activation=None)
+            vision_clsf = VisionClassifier(512, cfg.increment, activation=None)
     
 
     acc_list = []
@@ -278,15 +278,15 @@ def run_class_incremental(cfg, device):
         #         for name, param in model.named_parameters():
         #             if param.requires_grad and name in initial_params:
         #                 param.copy_(alpha * initial_params[name] + (1 - alpha) * param)
-        if cfg.visual_agent:
+        if cfg.visual_clsf:
             # pdb.set_trace()
             torch.cuda.empty_cache()
             model.eval()
-            e_num = cfg.visual_agent_epochs
-            vision_agent_loader = DataLoader(train_dataset[task_id], batch_size=cfg.visual_agent_batch_size, shuffle=True, num_workers=cfg.num_workers)
+            e_num = cfg.visual_clsf_epochs
+            vision_clsf_loader = DataLoader(train_dataset[task_id], batch_size=cfg.visual_clsf_batch_size, shuffle=True, num_workers=cfg.num_workers)
             features_dict = {}
             with torch.no_grad():
-                for inputs, targets, t in vision_agent_loader:
+                for inputs, targets, t in vision_clsf_loader:
                     inputs, targets = inputs.to(device), targets.to(device)
                     _, features, __ = model(inputs, test=True, return_feature=True)
                     for feature, target in zip(features, targets):
@@ -301,22 +301,22 @@ def run_class_incremental(cfg, device):
                 mean_features.append(mean_feature.unsqueeze(0))
             mean_features = torch.cat(mean_features).to(device)
             if task_id > 0:
-                vision_agent.add_weight(mean_features)
+                vision_clsf.add_weight(mean_features)
                 pass
             else:
-                vision_agent.set_weight(mean_features)
+                vision_clsf.set_weight(mean_features)
                 pass
-            optimizer = torch.optim.Adam(vision_agent.parameters(), lr=cfg.visual_agent_lr)
-            scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, e_num*len(vision_agent_loader), eta_min=cfg.visual_agent_lr*0.01)
+            optimizer = torch.optim.Adam(vision_clsf.parameters(), lr=cfg.visual_clsf_lr)
+            scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, e_num*len(vision_clsf_loader), eta_min=cfg.visual_clsf_lr*0.01)
             for e in range(e_num):
                 bach_i = -1
-                for inputs, targets, t in vision_agent_loader:
+                for inputs, targets, t in vision_clsf_loader:
                     inputs, targets = inputs.to(device), targets.to(device)
                     # pdb.set_trace()
                     with torch.no_grad():
                         outputs, _ = model(inputs, return_feature=True)
                     # pdb.set_trace()
-                    outputs = vision_agent(outputs)
+                    outputs = vision_clsf(outputs)
                     # pdb.set_trace()
                     loss = intra_cls(outputs,targets,targets_bais).mean()
                     # loss = F.cross_entropy(outputs, targets)
@@ -325,7 +325,7 @@ def run_class_incremental(cfg, device):
                     optimizer.step()
                     bach_i+=1
                     if bach_i % 10 == 0:
-                        logging.info(f"Epoch {e + 1}/{e_num} | Batch {bach_i + 1}/{len(vision_agent_loader)} | Loss: {loss.item()}")
+                        logging.info(f"Epoch {e + 1}/{e_num} | Batch {bach_i + 1}/{len(vision_clsf_loader)} | Loss: {loss.item()}")
                     scheduler.step()
             
             if cfg.balance_ft and cfg.real_replay and task_id > 0:
@@ -333,7 +333,7 @@ def run_class_incremental(cfg, device):
                 balance_loader = DataLoader(balance_data, batch_size=cfg.train_batch_size, shuffle=True, num_workers=cfg.num_workers)
                 epochs = cfg.balance_epochs
 
-                optimizer = torch.optim.Adam(vision_agent.parameters(), lr=cfg.visual_agent_lr*0.1)
+                optimizer = torch.optim.Adam(vision_clsf.parameters(), lr=cfg.visual_clsf_lr*0.1)
                 # optimizer = torch.optim.SGD(params, lr=cfg.lr, momentum=cfg.momentum, weight_decay=cfg.weight_decay)
                 scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, epochs*len(balance_loader), eta_min=cfg.lr*0.01)
                 for i_epoch in range(epochs):   
@@ -348,7 +348,7 @@ def run_class_incremental(cfg, device):
                         with torch.no_grad():
                             outputs, _ = model(inputs, return_feature=True)
                         # pdb.set_trace()
-                        outputs = vision_agent(outputs)
+                        outputs = vision_clsf(outputs)
                         loss_c = torch.nn.functional.cross_entropy(outputs, targets)
                         loss += loss_c
                         optimizer.zero_grad()
@@ -376,12 +376,12 @@ def run_class_incremental(cfg, device):
             inputs, targets = inputs.to(device), targets.to(device)
             
             with torch.no_grad():
-                if cfg.visual_agent:
+                if cfg.visual_clsf:
                     a = 1
                     b = 4
                     
                     outputs, image_feature, text_feature  = model(inputs, test=True, all_test=cfg.all_test, return_feature=True)
-                    vision_outputs = vision_agent(image_feature)
+                    vision_outputs = vision_clsf(image_feature)
 
                     outputs_softmax = F.softmax(outputs, dim=1)
                     vision_outputs_softmax = F.softmax(vision_outputs, dim=1)
