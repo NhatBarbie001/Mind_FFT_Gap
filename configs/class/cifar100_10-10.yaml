@@ -1,6 +1,6 @@
 hydra:
   run:
-    dir: ./experiments/${scenario}/${dataset}_${initial_increment}-${increment}_two_lora-overfit-no_all
+    dir: ./experiments/${scenario}/${dataset}_${initial_increment}-${increment}
   job:
     chdir: true
 
