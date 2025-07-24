@@ -1,4 +1,4 @@
-# Mind the Gap: Preserving and Compensating for the Modality Gap in CLIP-Based Continual Learning (ICCV25)
+# Mind the Gap: Preserving and Compensating for the Modality Gap in CLIP-Based Continual Learning (ICCV25 Highlight)
 This is the official code for our paper
 :<a href='https://arxiv.org/abs/2507.09118'><img src='https://img.shields.io/badge/Paper-Arxiv-red'></a>
 
