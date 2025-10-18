@@ -27,7 +27,7 @@ python main.py \
     dataset_root="[imagenet1k_path]" \
     class_order="class_orders/imagenet100.yaml"
 ```
-To obtain the epoch parameter from the first task, please run the epoch.py file.
+**Note:** To obtain the epoch parameter from the first task described in Eq. (3), please run the epoch.py file.
 
 
 The dataset_root folder should contain the train and val folders.
