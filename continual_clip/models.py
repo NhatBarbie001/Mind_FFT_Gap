@@ -19,8 +19,8 @@ import numpy as np
 
 
 def forward_clip(self, image, text, return_feature=False, _cur_task: int = -1):
-    print("=======================2. forward_clip ======================")
-    print(_cur_task)
+    # print("=======================2. forward_clip ======================")
+    #print(_cur_task)
     image_features = self.encode_image(image, _cur_task=_cur_task)
     text_features = self.encode_text(text, _cur_task=_cur_task)
 
@@ -120,7 +120,8 @@ class ClassIncrementalCLIP(nn.Module):
         return logits_per_image
 
     def forward(self, image, _cur_task:int = -1, test=False, all_test=False, return_feature=False,replay=None):
-        print("=======================1. forward ClassincrementalCLIP ======================")
+        # print("=======================1. forward ClassincrementalCLIP ======================")
+        print("=======================Lozzzzzzzzzz forward ClassincrementalCLIP ======================")
         if test:
             # pdb.set_trace()
             with torch.no_grad():
