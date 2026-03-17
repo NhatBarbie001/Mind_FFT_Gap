@@ -95,7 +95,7 @@ class MultiheadAttention_FFT(MultiheadAttention):
    
 
     def forward(self, query, key, value, key_padding_mask=None,
-                need_weights=True, attn_mask=None, _cur_task = None, device=None):
+                need_weights=True, attn_mask=None, _cur_task = -1, device=None):
         # type: (Tensor, Tensor, Tensor, Optional[Tensor], bool, Optional[Tensor]) -> Tuple[Tensor, Optional[Tensor]]
         r"""
     Args:
@@ -309,7 +309,9 @@ def multi_head_attention_forward(
         - attn_output_weights: :math:`(N, L, S)` where N is the batch size,
           L is the target sequence length, S is the source sequence length.
     """
-
+    print("======================= forward multi_head_attention_forward======================")
+    print("here okeeee")
+    #print(_cur_task)
     tgt_len, bsz, embed_dim = query.size()
     assert embed_dim == embed_dim_to_check
     # allow MHA to have different sizes for the feature dimension
