@@ -50,7 +50,7 @@ class MultiheadAttention_FFT(MultiheadAttention):
     def __init__(self, embed_dim, num_heads, dropout=0., bias=True, add_bias_kv=False, add_zero_attn=False, kdim=None, vdim=None, lora_alpha: int = 1, r=0, only_kv=False, mlp=False,
                  n_frq=3000, n_tasks=10, device=None):
         # super(MultiheadAttention, self).__init__()
-        super().__init__(embed_dim, num_heads, dropout=0., bias=True, add_bias_kv=False, add_zero_attn=False, kdim=None, vdim=None, lora_alpha = 1, r=0, only_kv=False, mlp=False)
+        super().__init__(embed_dim, num_heads, dropout=0., bias=True, add_bias_kv=False, add_zero_attn=False, kdim=None, vdim=None, lora_alpha = 1, r=r, only_kv=False, mlp=False)
 
         # FFT Attention ---------- Chua chac da code dung ?-----------------------------------
         # self.n_frq = n_frq
