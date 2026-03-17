@@ -135,6 +135,7 @@ class MultiheadAttention_FFT(MultiheadAttention):
           L is the target sequence length, S is the source sequence length.
         """
         if not self._qkv_same_embed_dim:
+            print("======================= self._qkv_same_embed_dim======================")
             return multi_head_attention_forward(
                 query, key, value, self.embed_dim, self.num_heads,
                 self.in_proj_weight, self.in_proj_bias, self.in_proj_weight_lora_A, self.in_proj_weight_lora_B, self.scaling,
@@ -177,6 +178,7 @@ class MultiheadAttention_FFT(MultiheadAttention):
                     only_kv=True
                 )
             elif self.mlp:
+                print("======================= self.mlp======================")
                 return multi_head_attention_forward(
                     query, key, value, self.embed_dim, self.num_heads,
                     self.in_proj_weight, self.in_proj_bias, self.in_proj_weight_lora_A, self.in_proj_weight_lora_B, self.scaling,
@@ -191,6 +193,7 @@ class MultiheadAttention_FFT(MultiheadAttention):
                 )
 
             else:
+                print("======================= else======================")
                 return multi_head_attention_forward(
                     query, key, value, self.embed_dim, self.num_heads,
                     self.in_proj_weight, self.in_proj_bias, self.in_proj_weight_lora_A, self.in_proj_weight_lora_B, self.scaling,
