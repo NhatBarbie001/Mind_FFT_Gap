@@ -95,7 +95,7 @@ class MultiheadAttention_FFT(MultiheadAttention):
    
 
     def forward(self, query, key, value, key_padding_mask=None,
-                need_weights=True, attn_mask=None, _cur_task = None):
+                need_weights=True, attn_mask=None, _cur_task = None, device=None):
         # type: (Tensor, Tensor, Tensor, Optional[Tensor], bool, Optional[Tensor]) -> Tuple[Tensor, Optional[Tensor]]
         r"""
     Args:
