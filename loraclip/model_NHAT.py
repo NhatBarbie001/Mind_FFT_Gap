@@ -229,11 +229,11 @@ class LoRAResidualAttentionBlock(nn.Module):
         self.ln_2 = LayerNorm(d_model)
         self.attn_mask = attn_mask
 
-    def attention(self, x: torch.Tensor, _cur_task = None, device=None):
+    def attention(self, x: torch.Tensor, _cur_task: int = -1, device=None):
         self.attn_mask = self.attn_mask.to(dtype=x.dtype, device=x.device) if self.attn_mask is not None else None
         return self.attn(x, x, x, need_weights=False, attn_mask=self.attn_mask, _cur_task = _cur_task, device=device)[0]
 
-    def forward(self, x: torch.Tensor, _cur_task = None, device=None):
+    def forward(self, x: torch.Tensor, _cur_task: int = -1, device=None):
         x = x + self.attention(self.ln_1(x), _cur_task = _cur_task, device=device)
         if self.mlp_flag:
             x = x + self.adapter_mlp(self.ln_2(x)) + self.mlp(self.ln_2(x))
@@ -267,7 +267,7 @@ class LoRATransformer(nn.Module):
         ])
     # def forward(self, x: torch.Tensor, _cur_task=None):
     #     return self.resblocks(x, _cur_task = _cur_task, device=x.device)
-    def forward(self, x, _cur_task=None, device=None):
+    def forward(self, x, _cur_task: int = -1, device=None):
         for block in self.resblocks:
             x = block(x, _cur_task=_cur_task, device=device)
         return x
@@ -331,7 +331,7 @@ class LoRAVisionTransformer(nn.Module):
         self.ln_post = LayerNorm(width)
         self.proj = nn.Parameter(scale * torch.randn(width, output_dim))
 
-    def forward(self, x: torch.Tensor, _cur_task=None):
+    def forward(self, x: torch.Tensor, _cur_task : int = -1):
         x = self.conv1(x)  # shape = [*, width, grid, grid]
         x = x.reshape(x.shape[0], x.shape[1], -1)  # shape = [*, width, grid ** 2]
         x = x.permute(0, 2, 1)  # shape = [*, grid ** 2, width]
@@ -627,7 +627,7 @@ class LoRACLIP(nn.Module):
     def dtype(self):
         return self.visual.conv1.weight.dtype
 
-    def encode_image(self, image, _cur_task=None):
+    def encode_image(self, image, _cur_task: int = -1):
         return self.visual(image.type(self.dtype), _cur_task = _cur_task)
 
     def encode_text(self, text):
@@ -646,7 +646,7 @@ class LoRACLIP(nn.Module):
         x = self.lora_text_projection(x)
         return x
 
-    def forward(self, image, text, _cur_task=None):
+    def forward(self, image, text, _cur_task: int = -1):
         image_features = self.encode_image(image, _cur_task=_cur_task)
         text_features = self.encode_text(text)
 

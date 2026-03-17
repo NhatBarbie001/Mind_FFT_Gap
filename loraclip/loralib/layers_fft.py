@@ -197,7 +197,7 @@ class MultiheadAttention_FFT(MultiheadAttention):
 
             else:
                 print("======================= else======================")
-                print(self.only_kv, self.mlp)
+                print(self.only_kv, self.mlp, _cur_task)
                 delta_w_k = self.get_delta_w_k(_cur_task)
                 delta_w_v = self.get_delta_w_v(_cur_task)
                 return multi_head_attention_forward(
