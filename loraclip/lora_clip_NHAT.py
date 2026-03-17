@@ -148,7 +148,8 @@ def load(name: str,
                 warnings.warn(f"File {model_path} is not a JIT archive. Loading as a state dict instead")
                 jit = False
             state_dict = torch.load(opened_file, map_location="cpu")
-
+    print("----------------------------------- model loaded -----------------------------------")
+    print(jit)
     if not jit:
         model = build_LoRA_FFT_model(state_dict or model.state_dict(), r, lora_mode, n_frq=n_frq, n_tasks=n_tasks, device=device).to(device)
         if str(device) == "cpu":
