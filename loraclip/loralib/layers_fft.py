@@ -205,6 +205,7 @@ from torch.nn.functional import linear, pad, softmax, dropout
 def multi_head_attention_forward(
                                  delta_w_k: Tensor,
                                  delta_w_v: Tensor,
+                                 query: Tensor,
                                  key: Tensor,       
                                  value: Tensor,
                                  embed_dim_to_check: int,
