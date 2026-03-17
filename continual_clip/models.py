@@ -7,7 +7,7 @@ import clip
 import torch
 import torch.nn as nn
 import types
-from loraclip import lora_clip_Nhat
+from loraclip import lora_clip_NHAT
 from clip.model import VisionTransformer as CLIPVisionTransformer
 from torch.nn import functional as F
 from .utils import get_class_ids_per_task, get_class_names
@@ -19,7 +19,7 @@ import numpy as np
 
 
 def forward_clip(self, image, text, return_feature=False, _cur_task=None):
-    image_features = self.encode_image(image)
+    image_features = self.encode_image(image, _cur_task=_cur_task)
     text_features = self.encode_text(text)
 
     # normalized features
@@ -80,7 +80,7 @@ class ClassIncrementalCLIP(nn.Module):
 
 
         #lora_clip
-        self.model, self.transforms = lora_clip_Nhat.load(cfg.model_name, device=device, jit=jit, r=cfg.lora_rank, lora_mode=cfg.lora_mode, n_frq=cfg.n_frq, n_tasks=cfg.task_num)
+        self.model, self.transforms = lora_clip_NHAT.load(cfg.model_name, device=device, jit=jit, r=cfg.lora_rank, lora_mode=cfg.lora_mode, n_frq=cfg.n_frq, n_tasks=cfg.task_num)
         # for name, param in self.model.named_parameters():
         #     if 'adapter_mlp' in name:
         #         param.requires_grad = True
