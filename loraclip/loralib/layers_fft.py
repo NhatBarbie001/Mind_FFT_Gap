@@ -160,7 +160,7 @@ class MultiheadAttention_FFT(MultiheadAttention):
                 #     attn_mask=attn_mask)
                 delta_w_k = self.get_delta_w_k(_cur_task)
                 delta_w_v = self.get_delta_w_v(_cur_task)
-                
+                print("======================= self.only_kv and not self.mlp======================")
                 return multi_head_attention_forward(
                     delta_w_k, delta_w_v,
                     query, key, value, self.embed_dim, self.num_heads,
