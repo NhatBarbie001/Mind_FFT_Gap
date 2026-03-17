@@ -22,7 +22,7 @@ def forward_clip(self, image, text, return_feature=False, _cur_task: int = -1):
     print("=======================2. forward_clip ======================")
     print(_cur_task)
     image_features = self.encode_image(image, _cur_task=_cur_task)
-    text_features = self.encode_text(text)
+    text_features = self.encode_text(text, _cur_task=_cur_task)
 
     # normalized features
     image_features = image_features / image_features.norm(dim=1, keepdim=True)

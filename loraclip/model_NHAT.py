@@ -554,6 +554,7 @@ class LoRACLIP(nn.Module):
                 )
 
         if "text" in lora_mode:
+            print("----------------create LoRATransformer for text------------------")
             self.transformer = LoRATransformer(
                 width=transformer_width,
                 layers=transformer_layers,
@@ -642,12 +643,13 @@ class LoRACLIP(nn.Module):
 
         return self.visual(image.type(self.dtype), _cur_task = _cur_task)
 
-    def encode_text(self, text):
+    def encode_text(self, text, _cur_task: int = -1):
+        print("=======================II. encode text ======================")
         x = self.token_embedding(text).type(self.dtype)  # [batch_size, n_ctx, d_model]
 
         x = x + self.positional_embedding.type(self.dtype)
         x = x.permute(1, 0, 2)  # NLD -> LND
-        x = self.transformer(x)
+        x = self.transformer(x, _cur_task = _cur_task)
         x = x.permute(1, 0, 2)  # LND -> NLD
         x = self.ln_final(x).type(self.dtype)
 
@@ -662,7 +664,7 @@ class LoRACLIP(nn.Module):
         print("======================= forward LoRA CLIP======================")
         print(_cur_task)
         image_features = self.encode_image(image, _cur_task=_cur_task)
-        text_features = self.encode_text(text)
+        text_features = self.encode_text(text, _cur_task=_cur_task)
 
         # normalized features
         image_features = image_features / image_features.norm(dim=1, keepdim=True)
