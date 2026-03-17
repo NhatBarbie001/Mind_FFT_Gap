@@ -79,16 +79,20 @@ class MultiheadAttention_FFT(MultiheadAttention):
         return indices
     
     def get_delta_w_k(self, task, alpha=300):
+        device = self.coef_k[task].device
+
         indices = self.indices[task]
         # F = torch.zeros(self.dim, self.dim).to(self.qkv.weight.device)
-        F = torch.zeros(self.embed_dim, self.embed_dim).to(self.device)
+        F = torch.zeros(self.embed_dim, self.embed_dim).to(device)
         F[indices[0,:], indices[1,:]] =  self.coef_k[task]
         return torch.fft.ifft2(F, dim=(-2,-1)).real * alpha
     
     def get_delta_w_v(self, task, alpha=300):
+        device = self.coef_v[task].device
+
         indices = self.indices[task]
         # F = torch.zeros(self.dim, self.dim).to(self.qkv.weight.device)
-        F = torch.zeros(self.embed_dim, self.embed_dim).to(self.device)
+        F = torch.zeros(self.embed_dim, self.embed_dim).to(device)
         F[indices[0,:], indices[1,:]] =  self.coef_v[task]
         return torch.fft.ifft2(F, dim=(-2,-1)).real * alpha
     #===============================================================================
