@@ -179,7 +179,10 @@ class MultiheadAttention_FFT(MultiheadAttention):
                 )
             elif self.mlp:
                 print("======================= self.mlp======================")
+                delta_w_k = self.get_delta_w_k(_cur_task)
+                delta_w_v = self.get_delta_w_v(_cur_task)
                 return multi_head_attention_forward(
+                    delta_w_k, delta_w_v,
                     query, key, value, self.embed_dim, self.num_heads,
                     self.in_proj_weight, self.in_proj_bias, self.in_proj_weight_lora_A, self.in_proj_weight_lora_B, self.scaling,
                     self.bias_k, self.bias_v, self.add_zero_attn,
@@ -481,8 +484,10 @@ def multi_head_attention_forward(
                 v = linear(value, v_proj_weight_non_opt, in_proj_bias)
 
             q += linear(linear(query, q_proj_weight_non_opt_A), q_proj_weight_non_opt_B) * q_proj_weight_scaling
-            k += linear(linear(key, k_proj_weight_non_opt_A), k_proj_weight_non_opt_B) * k_proj_weight_scaling
-            v += linear(linear(value, v_proj_weight_non_opt_A), v_proj_weight_non_opt_B) * v_proj_weight_scaling
+            # k += linear(linear(key, k_proj_weight_non_opt_A), k_proj_weight_non_opt_B) * k_proj_weight_scaling
+            # v += linear(linear(value, v_proj_weight_non_opt_A), v_proj_weight_non_opt_B) * v_proj_weight_scaling
+            k += linear(key, delta_w_k) * k_proj_weight_scaling
+            v += linear(value, delta_w_v) * v_proj_weight_scaling
 
     q = q * scaling
 
