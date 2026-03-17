@@ -230,13 +230,13 @@ class LoRAResidualAttentionBlock(nn.Module):
         self.attn_mask = attn_mask
 
     def attention(self, x: torch.Tensor, _cur_task: int = -1, device=None):
-        print("======================= forward attention======================")
+        print("======================= 7. forward attention======================")
         print(_cur_task)
         self.attn_mask = self.attn_mask.to(dtype=x.dtype, device=x.device) if self.attn_mask is not None else None
         return self.attn(x, x, x, need_weights=False, attn_mask=self.attn_mask, _cur_task = _cur_task, device=device)[0]
 
     def forward(self, x: torch.Tensor, _cur_task: int = -1, device=None):
-        print("======================= forward LoRAResidualAttentionBlocks======================")
+        print("=======================6. forward LoRAResidualAttentionBlocks======================")
         print(_cur_task)
         x = x + self.attention(self.ln_1(x), _cur_task = _cur_task, device=device)
         if self.mlp_flag:
@@ -272,7 +272,7 @@ class LoRATransformer(nn.Module):
     # def forward(self, x: torch.Tensor, _cur_task=None):
     #     return self.resblocks(x, _cur_task = _cur_task, device=x.device)
     def forward(self, x, _cur_task: int = -1, device=None):
-        print("======================= forward LoRATransformer ======================")
+        print("=======================5. forward LoRATransformer ======================")
         print(_cur_task)
         for block in self.resblocks:
             x = block(x, _cur_task=_cur_task, device=device)
@@ -338,7 +338,7 @@ class LoRAVisionTransformer(nn.Module):
         self.proj = nn.Parameter(scale * torch.randn(width, output_dim))
 
     def forward(self, x: torch.Tensor, _cur_task : int = -1):
-        print("======================= forward LoRAVisionTransformer ======================")
+        print("=======================4. forward LoRAVisionTransformer ======================")
         print(_cur_task)
         x = self.conv1(x)  # shape = [*, width, grid, grid]
         x = x.reshape(x.shape[0], x.shape[1], -1)  # shape = [*, width, grid ** 2]
@@ -637,7 +637,7 @@ class LoRACLIP(nn.Module):
         return self.visual.conv1.weight.dtype
 
     def encode_image(self, image, _cur_task: int = -1):
-        print("======================= encode image ======================")
+        print("=======================3. encode image ======================")
         print(_cur_task)
 
         return self.visual(image.type(self.dtype), _cur_task = _cur_task)
