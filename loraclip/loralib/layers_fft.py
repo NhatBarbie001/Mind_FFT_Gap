@@ -194,6 +194,7 @@ class MultiheadAttention_FFT(MultiheadAttention):
 
             else:
                 print("======================= else======================")
+                print(self.only_kv, self.mlp)
                 return multi_head_attention_forward(
                     query, key, value, self.embed_dim, self.num_heads,
                     self.in_proj_weight, self.in_proj_bias, self.in_proj_weight_lora_A, self.in_proj_weight_lora_B, self.scaling,
