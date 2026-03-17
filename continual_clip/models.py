@@ -80,7 +80,7 @@ class ClassIncrementalCLIP(nn.Module):
 
 
         #lora_clip
-        self.model, self.transforms = lora_clip_NHAT.load(cfg.model_name, device=device, jit=jit, r=cfg.lora_rank, lora_mode=cfg.lora_mode, n_frq=3000, n_tasks=cfg.task_num)
+        self.model, self.transforms = lora_clip_NHAT.load(cfg.model_name, device=device, jit=jit, r=cfg.lora_rank, lora_mode=cfg.lora_mode, n_frq=3000, n_tasks=cfg.increment)
         # for name, param in self.model.named_parameters():
         #     if 'adapter_mlp' in name:
         #         param.requires_grad = True
