@@ -198,7 +198,10 @@ class MultiheadAttention_FFT(MultiheadAttention):
             else:
                 print("======================= else======================")
                 print(self.only_kv, self.mlp)
+                delta_w_k = self.get_delta_w_k(_cur_task)
+                delta_w_v = self.get_delta_w_v(_cur_task)
                 return multi_head_attention_forward(
+                    delta_w_k, delta_w_v,
                     query, key, value, self.embed_dim, self.num_heads,
                     self.in_proj_weight, self.in_proj_bias, self.in_proj_weight_lora_A, self.in_proj_weight_lora_B, self.scaling,
                     self.bias_k, self.bias_v, self.add_zero_attn,
