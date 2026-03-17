@@ -200,8 +200,8 @@ class MultiheadAttention_FFT(MultiheadAttention):
                 )
 
             else:
-                print("======================= else======================")
-                print(self.only_kv, self.mlp, _cur_task)
+                # print("======================= else======================")
+                # print(self.only_kv, self.mlp, _cur_task)
                 delta_w_k = self.get_delta_w_k(_cur_task)
                 delta_w_v = self.get_delta_w_v(_cur_task)
                 return multi_head_attention_forward(
@@ -313,8 +313,8 @@ def multi_head_attention_forward(
         - attn_output_weights: :math:`(N, L, S)` where N is the batch size,
           L is the target sequence length, S is the source sequence length.
     """
-    print("======================= forward multi_head_attention_forward======================")
-    print("here okeeee")
+    # print("======================= forward multi_head_attention_forward======================")
+    # print("here okeeee")
     #print(_cur_task)
     tgt_len, bsz, embed_dim = query.size()
     assert embed_dim == embed_dim_to_check
