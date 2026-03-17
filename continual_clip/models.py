@@ -7,7 +7,7 @@ import clip
 import torch
 import torch.nn as nn
 import types
-from loraclip import lora_clip
+from loraclip import lora_clip_Nhat
 from clip.model import VisionTransformer as CLIPVisionTransformer
 from torch.nn import functional as F
 from .utils import get_class_ids_per_task, get_class_names
@@ -18,7 +18,7 @@ import numpy as np
 
 
 
-def forward_clip(self, image, text, return_feature=False):
+def forward_clip(self, image, text, return_feature=False, _cur_task=None):
     image_features = self.encode_image(image)
     text_features = self.encode_text(text)
 
@@ -80,7 +80,7 @@ class ClassIncrementalCLIP(nn.Module):
 
 
         #lora_clip
-        self.model, self.transforms = lora_clip.load(cfg.model_name, device=device, jit=jit, r=cfg.lora_rank, lora_mode=cfg.lora_mode)
+        self.model, self.transforms = lora_clip_Nhat.load(cfg.model_name, device=device, jit=jit, r=cfg.lora_rank, lora_mode=cfg.lora_mode, n_frq=cfg.n_frq, n_tasks=cfg.task_num)
         # for name, param in self.model.named_parameters():
         #     if 'adapter_mlp' in name:
         #         param.requires_grad = True
@@ -117,7 +117,7 @@ class ClassIncrementalCLIP(nn.Module):
         logits_per_image = logit_scale * image_features @ text_features.t()
         return logits_per_image
 
-    def forward(self, image, test=False, all_test=False, return_feature=False,replay=None):
+    def forward(self, image, _cur_task, test=False, all_test=False, return_feature=False,replay=None):
         if test:
             # pdb.set_trace()
             with torch.no_grad():
@@ -147,7 +147,7 @@ class ClassIncrementalCLIP(nn.Module):
                 replay_features = replay / replay.norm(dim=1, keepdim=True)
                 replay_logits = replay_features @ text_features_for_replay.t() * 100
             else:
-                logits_per_image, _ = self.model(image, self.text_tokens)
+                logits_per_image, _ = self.model(image, self.text_tokens, _cur_task = _cur_task)
             probs = logits_per_image
                 
         if return_feature:

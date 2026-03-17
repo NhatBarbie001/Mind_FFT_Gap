@@ -23,6 +23,7 @@ initial_increment: 10
 scenario: "class"
 dataset: "cifar100"
 task_num: 10
+n_frq: 3000
 seed: 42
 
 epochs: 1
