@@ -230,14 +230,14 @@ class LoRAResidualAttentionBlock(nn.Module):
         self.attn_mask = attn_mask
 
     def attention(self, x: torch.Tensor, _cur_task: int = -1, device=None):
-        print("======================= 7. forward attention======================")
-        print(_cur_task)
+        # print("======================= 7. forward attention======================")
+        # print(_cur_task)
         self.attn_mask = self.attn_mask.to(dtype=x.dtype, device=x.device) if self.attn_mask is not None else None
         return self.attn(x, x, x, need_weights=False, attn_mask=self.attn_mask, _cur_task = _cur_task, device=device)[0]
 
     def forward(self, x: torch.Tensor, _cur_task: int = -1, device=None):
-        print("=======================6. forward LoRAResidualAttentionBlocks======================")
-        print(_cur_task)
+        # print("=======================6. forward LoRAResidualAttentionBlocks======================")
+        # print(_cur_task)
         x = x + self.attention(self.ln_1(x), _cur_task = _cur_task, device=device)
         if self.mlp_flag:
             x = x + self.adapter_mlp(self.ln_2(x)) + self.mlp(self.ln_2(x))
@@ -272,8 +272,8 @@ class LoRATransformer(nn.Module):
     # def forward(self, x: torch.Tensor, _cur_task=None):
     #     return self.resblocks(x, _cur_task = _cur_task, device=x.device)
     def forward(self, x, _cur_task: int = -1, device=None):
-        print("=======================5. forward LoRATransformer ======================")
-        print(_cur_task)
+        # print("=======================5. forward LoRATransformer ======================")
+        # print(_cur_task)
         for block in self.resblocks:
             x = block(x, _cur_task=_cur_task, device=device)
         return x
@@ -338,8 +338,8 @@ class LoRAVisionTransformer(nn.Module):
         self.proj = nn.Parameter(scale * torch.randn(width, output_dim))
 
     def forward(self, x: torch.Tensor, _cur_task : int = -1):
-        print("=======================4. forward LoRAVisionTransformer ======================")
-        print(_cur_task)
+        # print("=======================4. forward LoRAVisionTransformer ======================")
+        # print(_cur_task)
         x = self.conv1(x)  # shape = [*, width, grid, grid]
         x = x.reshape(x.shape[0], x.shape[1], -1)  # shape = [*, width, grid ** 2]
         x = x.permute(0, 2, 1)  # shape = [*, grid ** 2, width]
@@ -638,13 +638,13 @@ class LoRACLIP(nn.Module):
         return self.visual.conv1.weight.dtype
 
     def encode_image(self, image, _cur_task: int = -1):
-        print("=======================3. encode image ======================")
-        print(_cur_task)
+        # print("=======================3. encode image ======================")
+        # print(_cur_task)
 
         return self.visual(image.type(self.dtype), _cur_task = _cur_task)
 
     def encode_text(self, text, _cur_task: int = -1):
-        print("=======================II. encode text ======================")
+        # print=======================II. encode text ======================")
         x = self.token_embedding(text).type(self.dtype)  # [batch_size, n_ctx, d_model]
 
         x = x + self.positional_embedding.type(self.dtype)
@@ -661,8 +661,8 @@ class LoRACLIP(nn.Module):
         return x
 
     def forward(self, image, text, _cur_task: int = -1):
-        print("======================= forward LoRA CLIP======================")
-        print(_cur_task)
+        # print("======================= forward LoRA CLIP======================")
+        # print(_cur_task)
         image_features = self.encode_image(image, _cur_task=_cur_task)
         text_features = self.encode_text(text, _cur_task=_cur_task)
 
